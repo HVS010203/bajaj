@@ -1,0 +1,57 @@
+import React, { useState } from "react";
+
+const API_URL = "https://your-backend-url/bfhl";  // Replace with deployed API
+
+function App() {
+    const [input, setInput] = useState("");
+    const [response, setResponse] = useState(null);
+    const [filter, setFilter] = useState([]);
+
+    const handleSubmit = async () => {
+        try {
+            const jsonData = JSON.parse(input);
+            const res = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonData)
+            });
+            const data = await res.json();
+            setResponse(data);
+        } catch (error) {
+            alert("Invalid JSON or API error.");
+        }
+    };
+
+    return (
+        <div style={{ textAlign: "center", marginTop: "50px" }}>
+            <h1>CU12345</h1> {/* Change Roll Number */}
+            <textarea
+                rows="5"
+                cols="40"
+                placeholder='Enter JSON: {"data":["A","1","B","4"]}'
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+            />
+            <br />
+            <button onClick={handleSubmit}>Submit</button>
+
+            {response && (
+                <>
+                    <h3>Filter Options</h3>
+                    <select multiple onChange={(e) => setFilter([...e.target.selectedOptions].map(o => o.value))}>
+                        <option value="alphabets">Alphabets</option>
+                        <option value="numbers">Numbers</option>
+                        <option value="highest_alphabet">Highest Alphabet</option>
+                    </select>
+
+                    <h3>Response:</h3>
+                    {filter.includes("alphabets") && <p>Alphabets: {response.alphabets.join(", ")}</p>}
+                    {filter.includes("numbers") && <p>Numbers: {response.numbers.join(", ")}</p>}
+                    {filter.includes("highest_alphabet") && <p>Highest Alphabet: {response.highest_alphabet.join(", ")}</p>}
+                </>
+            )}
+        </div>
+    );
+}
+
+export default App;
